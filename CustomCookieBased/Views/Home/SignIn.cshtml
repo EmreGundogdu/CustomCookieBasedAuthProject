@@ -1,0 +1,12 @@
+﻿@model UserSignInModel
+@{
+    Layout = "_Layout";
+}
+<form asp-action="SignIn" method="post">
+    <input asp-for="Username" />
+    <input asp-for="Password" />
+    <input type="checkbox" asp-for="RememberMe" /><label>Remember Me</label>
+    <div>
+        <button type="submit">Giriş Yap</button>
+    </div>
+</form>

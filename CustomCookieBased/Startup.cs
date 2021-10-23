@@ -26,17 +26,20 @@ namespace CustomCookieBased
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CustomCookieContext>(opt=>
+            services.AddDbContext<CustomCookieContext>(opt =>
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("CustomCookieConStr"));
             });
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt=>
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
             {
                 opt.Cookie.Name = "CustomCookie";
                 opt.Cookie.HttpOnly = true;
                 opt.Cookie.SameSite = SameSiteMode.Strict;// cookiyi paylaþýma kapatýr
                 opt.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 opt.ExpireTimeSpan = TimeSpan.FromDays(10);
+                opt.LoginPath = new PathString("/Home/SignIn");
+                opt.LogoutPath = new PathString("Home/LogOut");
+                opt.AccessDeniedPath = new PathString("/Home/AccessDenied");
             });
             services.AddControllersWithViews();
         }
@@ -49,11 +52,13 @@ namespace CustomCookieBased
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthentication();
 
-            app.UseAuthorization(); 
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
