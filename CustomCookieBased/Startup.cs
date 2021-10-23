@@ -1,4 +1,5 @@
 using CustomCookieBased.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,14 @@ namespace CustomCookieBased
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("CustomCookieConStr"));
             });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt=>
+            {
+                opt.Cookie.Name = "CustomCookie";
+                opt.Cookie.HttpOnly = true;
+                opt.Cookie.SameSite = SameSiteMode.Strict;// cookiyi paylaþýma kapatýr
+                opt.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                opt.ExpireTimeSpan = TimeSpan.FromDays(10);
+            });
             services.AddControllersWithViews();
         }
 
@@ -41,6 +50,10 @@ namespace CustomCookieBased
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization(); 
 
             app.UseEndpoints(endpoints =>
             {
